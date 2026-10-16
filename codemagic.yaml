@@ -1,0 +1,21 @@
+workflows:
+  android-apk:
+    name: Build Android APK
+    instance_type: mac_mini_m1
+    max_build_duration: 60
+    scripts:
+      - name: Extract zip file
+        script: |
+          unzip -o lmHdthzip.zip
+          if [ -d "lmHdth" ]; then cp -r lmHdth/* .; fi
+      - name: Install dependencies
+        script: |
+          pnpm install || npm install
+      - name: Generate Android project
+        script: |
+          npx expo prebuild --platform android
+      - name: Build APK locally
+        script: |
+          cd android && ./gradlew assembleRelease
+    artifacts:
+      - android/app/build/outputs/apk/release/*.apk
